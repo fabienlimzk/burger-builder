@@ -4,10 +4,6 @@ import classes from './BuildControls.css';
 
 const controls = [
   {
-    label: 'Salad',
-    type: 'salad',
-  },
-  {
     label: 'Bacon',
     type: 'bacon',
   },
@@ -18,6 +14,10 @@ const controls = [
   {
     label: 'Meat',
     type: 'meat',
+  },
+  {
+    label: 'Salad',
+    type: 'salad',
   },
 ];
 

@@ -36,40 +36,13 @@ class BurgerBuilder extends Component {
     return sum > 0;
   };
 
-  ////
-  // addIngredientHandler = (type) => {
-  //   const oldCount = this.state.ingredients[type];
-  //   const updatedCount = oldCount + 1;
-  //   const updatedIngredients = {
-  //     ...this.state.ingredients,
-  //   };
-  //   updatedIngredients[type] = updatedCount;
-  //   const priceAddition = INGREDIENT_PRICES[type];
-  //   const oldPrice = this.props.price;
-  //   const newPrice = oldPrice + priceAddition;
-  //   this.setState({ totalPrice: newPrice, ingredients: updatedIngredients });
-  //   this.updatePurchaseState(updatedIngredients);
-  // };
-
-  // removeIngredientHandler = (type) => {
-  //   const oldCount = this.state.ingredients[type];
-  //   if (oldCount <= 0) {
-  //     return;
-  //   }
-  //   const updatedCount = oldCount - 1;
-  //   const updatedIngredients = {
-  //     ...this.state.ingredients,
-  //   };
-  //   updatedIngredients[type] = updatedCount;
-  //   const priceDeduction = INGREDIENT_PRICES[type];
-  //   const oldPrice = this.props.price;
-  //   const newPrice = oldPrice - priceDeduction;
-  //   this.setState({ totalPrice: newPrice, ingredients: updatedIngredients });
-  //   this.updatePurchaseState(updatedIngredients);
-  // };
-
   purchaseHandler = () => {
-    this.setState({ purchasing: true });
+    if (this.props.isAuthenticated) {
+      this.setState({ purchasing: true });
+    } else {
+      this.props.onSetAuthRedirectPath('/checkout');
+      this.props.history.push('/auth');
+    }
   };
 
   purchaseCancelHandler = () => {
@@ -77,49 +50,6 @@ class BurgerBuilder extends Component {
   };
 
   purchaseContinueHandler = () => {
-    // alert('Get ready to eat !');
-    // this.setState({ loading: true });
-    // const order = {
-    //   ingredients: this.state.ingredients,
-    //   price: this.state.totalPrice,
-    //   customer: {
-    //     name: 'Fabien Lim',
-    //     address: {
-    //       street: 'Singapore St',
-    //       zipCode: '123456',
-    //       country: 'Singapore',
-    //     },
-    //     email: 'test@test.com',
-    //   },
-    //   deliveryMethod: 'fastest',
-    // };
-    // axios
-    //   .post('/orders.json', order)
-    //   .then((response) => {
-    //     this.setState({ loading: false, purchasing: false });
-    //   })
-    //   .catch((error) => {
-    //     this.setState({ loading: false, purchasing: false });
-    //   });
-
-    // const queryParams = [];
-
-    // for (let i in this.state.ingredients) {
-    //   queryParams.push(
-    //     encodeURIComponent(i) +
-    //       '=' +
-    //       encodeURIComponent(this.state.ingredients[i])
-    //   );
-    // }
-
-    // queryParams.push('price=' + this.props.price);
-
-    // const queryString = queryParams.join('&');
-
-    // this.props.history.push({
-    //   pathname: '/checkout',
-    //   search: '?' + queryString,
-    // });
     this.props.onInitPurchase();
     this.props.history.push('/checkout');
   };
@@ -152,6 +82,7 @@ class BurgerBuilder extends Component {
             purchaseable={this.updatePurchaseState(this.props.ings)}
             ordered={this.purchaseHandler}
             price={this.props.price}
+            isAuth={this.props.isAuthenticated}
           />
         </Aux>
       );
@@ -185,6 +116,7 @@ const mapStateToProps = (state) => {
     ings: state.burgerBuilder.ingredients,
     price: state.burgerBuilder.totalPrice,
     error: state.burgerBuilder.error,
+    isAuthenticated: state.auth.token !== null,
   };
 };
 
@@ -201,6 +133,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     onInitPurchase: () => {
       dispatch(actions.purchaseInit());
+    },
+    onSetAuthRedirectPath: (path) => {
+      dispatch(actions.setAuthRedirectPath(path));
     },
   };
 };
